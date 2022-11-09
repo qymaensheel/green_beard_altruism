@@ -1,23 +1,28 @@
 import random
 
 import numpy as np
+from matplotlib import pyplot as plt
 
 import config
 from blob import BlobState, Blob, BlobGene
 from home import Home
+from statistics import Statistics, Day
 from tree import Tree
 
 
 def simulation():
+    statistics = Statistics()
     home = Home()
     fill_home(home)
     for step in range(config.STEPS):
         shouters = 0
-        print(f'\n\n\n***** DAY {step + 1} *****\n')
-        print(f'Altruistic blobs: {home.get_blob_count_by_type(BlobGene.ALTRUISTIC)}')
-        print(f'Cowardice blobs: {home.get_blob_count_by_type(BlobGene.COWARDICE)}')
-        number_of_trees = len(home.get_blobs())//2 + 1
-        trees = generate_trees(number_of_trees)
+        altruistic_population = home.get_blob_count_by_type(BlobGene.ALTRUISTIC)
+        cowardice_population = home.get_blob_count_by_type(BlobGene.COWARDICE)
+        statistics.days.append(Day(altruistic_population, cowardice_population))
+        print(f'\n***** DAY {step + 1} *****\n')
+        print(f'Altruistic blobs: {altruistic_population}')
+        print(f'Cowardice blobs: {cowardice_population}')
+        trees = generate_trees()
         assign_blobs_and_trees(trees, home)
         for tree in trees:
             if tree.predator and len(tree.blobs) == 2:
@@ -58,6 +63,13 @@ def simulation():
                 new_blobs.append(son)
         home.blobs = new_blobs.copy()
 
+    plt.plot(list(map(lambda day: day.altruistic_population, statistics.days)), color='b', label='alt')
+    plt.plot(list(map(lambda day: day.cowardice_population, statistics.days)), color='r', label='cow')
+    plt.legend()
+    plt.xlabel('Days')
+    plt.ylabel('Population')
+    plt.title('hehe')
+    plt.show()
     print('hehe')
 
 
@@ -66,10 +78,12 @@ def assign_blobs_and_trees(trees, home):
     available_slots = trees + trees
     random.shuffle(available_slots)
     for blob in blobs:
-        tree_choice = available_slots.pop()
-        tree_choice.place_blob(blob)
-        blob.tree = tree_choice
-        blob.state = BlobState.NEAR_TREE
+        if len(available_slots) > 0:
+            tree_choice = available_slots.pop()
+            tree_choice.place_blob(blob)
+            blob.tree = tree_choice
+            blob.state = BlobState.NEAR_TREE
+
     home.blobs = []
 
 
@@ -91,5 +105,6 @@ def fill_home(home: Home) -> None:
             home.add_blob(Blob(BlobGene.COWARDICE))
 
 
-simulation()
-print("hehe")
+if __name__ == '__main__':
+    simulation()
+    print("hehe")
