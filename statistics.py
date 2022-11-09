@@ -3,6 +3,7 @@ class Day():
         self.altruistic_population = altruistic_population
         self.cowardice_population = cowardice_population
 
+
 class Statistics():
 
     def __init__(self):

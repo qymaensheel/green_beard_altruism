@@ -1,20 +1,20 @@
 import random
-
 import numpy as np
 from matplotlib import pyplot as plt
-
-import config
+from config import Config 
 from blob import BlobState, Blob, BlobGene
 from home import Home
 from statistics import Statistics, Day
 from tree import Tree
+
+config = Config()
 
 
 def simulation():
     statistics = Statistics()
     home = Home()
     fill_home(home)
-    for step in range(config.STEPS):
+    for step in range(Config.STEPS):
         shouters = 0
         altruistic_population = home.get_blob_count_by_type(BlobGene.ALTRUISTIC)
         cowardice_population = home.get_blob_count_by_type(BlobGene.COWARDICE)
@@ -35,7 +35,7 @@ def simulation():
                     action_blob.state = BlobState.SHOUT
                     shouters += 1
                     passive_blob.state = BlobState.RUN_AWAY
-                    p = [1 - config.PROB_GET_EATEN, config.PROB_GET_EATEN]
+                    p = [1 - Config.PROB_GET_EATEN, Config.PROB_GET_EATEN]
                     eaten = bool(np.random.choice((0, 1), size=1, p=p))
                     if eaten:
                         action_blob.state = BlobState.DEAD
@@ -63,12 +63,21 @@ def simulation():
                 new_blobs.append(son)
         home.blobs = new_blobs.copy()
 
-    plt.plot(list(map(lambda day: day.altruistic_population, statistics.days)), color='b', label='alt')
-    plt.plot(list(map(lambda day: day.cowardice_population, statistics.days)), color='r', label='cow')
-    plt.legend()
-    plt.xlabel('Days')
-    plt.ylabel('Population')
-    plt.title('hehe')
+    # plt.figure(figsize=[10, 5])
+    fig, ax = plt.subplots(figsize=[10, 5])
+
+    ax.plot(list(map(lambda day: day.altruistic_population, statistics.days)), color='b', label='alt')
+    ax.plot(list(map(lambda day: day.cowardice_population, statistics.days)), color='r', label='cow')
+    ax.legend()
+    ax.set_xlabel('Days')
+    ax.set_ylabel('Population')
+    title = ax.set_title(str(config))
+    fig.tight_layout()
+    title.set_y(1.05)
+    fig.subplots_adjust(top=0.65)
+
+
+
     plt.show()
     print('hehe')
 
@@ -87,18 +96,18 @@ def assign_blobs_and_trees(trees, home):
     home.blobs = []
 
 
-def generate_trees(number_of_trees=config.NUMBER_OF_TREES) -> list[Tree]:
+def generate_trees(number_of_trees=Config.NUMBER_OF_TREES) -> list[Tree]:
     trees = []
     for tree_index in range(number_of_trees):
-        p = [1 - config.PROB_BAD_TREE, config.PROB_BAD_TREE]
+        p = [1 - Config.PROB_BAD_TREE, Config.PROB_BAD_TREE]
         has_predator = bool(np.random.choice((0, 1), size=1, p=p))
         trees.append(Tree(has_predator))
     return trees
 
 
 def fill_home(home: Home) -> None:
-    number_of_altruistic_blobs = config.NUMBER_OF_BLOBS * config.ALTRUISTIC_GENE_FRACTION
-    for blob_index in range(config.NUMBER_OF_BLOBS):
+    number_of_altruistic_blobs = Config.NUMBER_OF_BLOBS * Config.ALTRUISTIC_GENE_FRACTION
+    for blob_index in range(Config.NUMBER_OF_BLOBS):
         if blob_index < number_of_altruistic_blobs:
             home.add_blob(Blob(BlobGene.ALTRUISTIC))
         else:

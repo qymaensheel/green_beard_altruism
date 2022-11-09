@@ -1,8 +1,7 @@
 import random
 from enum import Enum
 from uuid import uuid4
-
-import config
+from config import Config
 
 
 class BlobGene(Enum):
@@ -27,7 +26,7 @@ class Blob:
         self.tree = None
 
     def reproduce(self):
-        if random.random() < config.PROB_DOUBLE_REPRODUCE:
+        if random.random() < Config.PROB_DOUBLE_REPRODUCE:
             son = Blob(self.gene)
             return [son]
         else:
