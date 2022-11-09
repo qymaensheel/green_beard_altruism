@@ -1,5 +1,8 @@
+import random
 from enum import Enum
 from uuid import uuid4
+
+import config
 
 
 class BlobGene(Enum):
@@ -23,9 +26,14 @@ class Blob:
         self.state = BlobState.SLEEPING
         self.tree = None
 
-
     def reproduce(self):
-        pass
+        if random.random() < config.PROB_DOUBLE_REPRODUCE:
+            son = Blob(self.gene)
+            return [son]
+        else:
+            son1 = Blob(self.gene)
+            son2 = Blob(self.gene)
+            return [son1, son2]
 
     def __str__(self):
         return f'Blob {self.id}, gene: {self.gene}, state: {self.state}'

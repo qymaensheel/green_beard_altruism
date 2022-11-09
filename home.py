@@ -1,4 +1,4 @@
-from blob import Blob, BlobState
+from blob import Blob, BlobState, BlobGene
 
 
 class Home:
@@ -15,3 +15,7 @@ class Home:
 
     def get_blob_count(self):
         return len(self.blobs)
+
+    def get_blob_count_by_type(self, gene: BlobGene):
+        blob_list = [blob for blob in self.get_blobs() if blob.gene == gene]
+        return len(blob_list)
