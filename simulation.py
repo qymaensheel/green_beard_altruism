@@ -26,7 +26,7 @@ def simulation():
                 if action_blob.gene == BlobGene.COWARDICE:
                     action_blob.state = BlobState.RUN_AWAY
                     passive_blob.state = BlobState.DEAD
-                elif action_blob.gene == BlobGene.ALTRUISTIC:
+                elif action_blob.gene == BlobGene.ALTRUISTIC and passive_blob.gene == BlobGene.ALTRUISTIC:
                     action_blob.state = BlobState.SHOUT
                     shouters += 1
                     passive_blob.state = BlobState.RUN_AWAY
@@ -36,6 +36,9 @@ def simulation():
                         action_blob.state = BlobState.DEAD
                     else:
                         action_blob.state = BlobState.RUN_AWAY
+                else:
+                    action_blob.state = BlobState.RUN_AWAY
+                    passive_blob.state = BlobState.DEAD
 
             # if there is one blob near tree he always run away
             elif tree.predator and len(tree.blobs) == 1:
