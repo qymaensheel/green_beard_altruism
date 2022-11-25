@@ -1,75 +1,116 @@
 import random
 import numpy as np
+import pygame
 from matplotlib import pyplot as plt
 from config import Config 
 from blob import BlobState, Blob, BlobGene
 from home import Home
 from statistics import Statistics, Day
 from tree import Tree
+from visual_simulation import Grid, draw_grid
 
-config = Config()
+from pygame.locals import (
+    K_RIGHT,
+    KEYDOWN,
+    QUIT,
+)
+
+config = Config.get_instance()
 
 
 def simulation():
+    pygame.init()
+
+    w_width = 1600
+    w_height = 800
+    gridSize = 200
+
+    screen = pygame.display.set_mode([w_width, w_height + 100])
+    grid = Grid(gridSize)
+    screen.fill((128, 128, 128))
+    running = True
+
+    time_delay = 5000  # 0.1 s
+    timer_event = pygame.USEREVENT + 1
+    pygame.time.set_timer(timer_event, time_delay)
+
     statistics = Statistics()
     home = Home()
     fill_home(home)
-    for step in range(config.STEPS):
-        shouters = 0
-        altruistic_population = home.get_blob_count_by_type(BlobGene.ALTRUISTIC)
-        cowardice_population = home.get_blob_count_by_type(BlobGene.COWARDICE)
-        statistics.days.append(Day(altruistic_population, cowardice_population))
-        print(f'\n***** DAY {step + 1} *****\n')
-        print(f'Altruistic blobs: {altruistic_population}')
-        print(f'Cowardice blobs: {cowardice_population}')
-        trees = generate_trees()
-        assign_blobs_and_trees(trees, home)
-        for tree in trees:
-            if tree.predator and len(tree.blobs) == 2:
-                action_blob = tree.blobs[0]
-                passive_blob = tree.blobs[1]
-                if config.GREEN_BEARD:
-                    action = action_blob.gene == BlobGene.ALTRUISTIC and passive_blob.gene == BlobGene.ALTRUISTIC
-                else:
-                    action = action_blob.gene == BlobGene.ALTRUISTIC
-                if action_blob.gene == BlobGene.COWARDICE:
-                    action_blob.state = BlobState.RUN_AWAY
-                    passive_blob.state = BlobState.DEAD
-                elif action:
-                    action_blob.state = BlobState.SHOUT
-                    shouters += 1
-                    passive_blob.state = BlobState.RUN_AWAY
-                    p = [1 - config.PROB_GET_EATEN, config.PROB_GET_EATEN]
-                    eaten = bool(np.random.choice((0, 1), size=1, p=p))
-                    if eaten:
-                        action_blob.state = BlobState.DEAD
-                    else:
-                        action_blob.state = BlobState.RUN_AWAY
-                else:
-                    action_blob.state = BlobState.RUN_AWAY
-                    passive_blob.state = BlobState.DEAD
+    step = -1
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+            if event.type == KEYDOWN:
+                if event.key == K_RIGHT:
+                    step += 1
+                    num_of_trees = config.TREES_GRID_SIZE ** 2
+                    trees = generate_trees(num_of_trees)
+                    draw_grid(screen, grid, w_width, w_height, step, trees, home, shuffle=False)
+                    altruistic_population = home.get_blob_count_by_type(BlobGene.ALTRUISTIC)
+                    cowardice_population = home.get_blob_count_by_type(BlobGene.COWARDICE)
+                    statistics.days.append(Day(altruistic_population, cowardice_population))
+                    assign_blobs_and_trees(trees, home)
 
-            # if there is one blob near tree he always run away
-            elif tree.predator and len(tree.blobs) == 1:
-                tree.blobs[0].state = BlobState.RUN_AWAY
+                    draw_grid(screen, grid, w_width, w_height, step, trees, home)
 
-        print('hehe')
-        for tree in trees:
-            for blob in tree.blobs:
-                if blob.state in [BlobState.RUN_AWAY, BlobState.NEAR_TREE]:
-                    blob.state = BlobState.TO_REPRODUCE
-                    home.add_blob(blob)
+                    print(f'\n***** DAY {step + 1} *****\n')
+                    print(f'Altruistic blobs: {altruistic_population}')
+                    print(f'Cowardice blobs: {cowardice_population}')
 
-        new_blobs = []
-        for blob in home.get_blobs():
-            sons = blob.reproduce()
-            for son in sons:
-                new_blobs.append(son)
-        home.blobs = new_blobs.copy()
+                    shouters = 0
+                    for tree in trees:
+                        if tree.predator and len(tree.blobs) == 2:
+                            action_blob = tree.blobs[0]
+                            passive_blob = tree.blobs[1]
+                            if config.GREEN_BEARD:
+                                action = action_blob.gene == BlobGene.ALTRUISTIC and passive_blob.gene == BlobGene.ALTRUISTIC
+                            else:
+                                action = action_blob.gene == BlobGene.ALTRUISTIC
+                            if action_blob.gene == BlobGene.COWARDICE:
+                                action_blob.state = BlobState.RUN_AWAY
+                                passive_blob.state = BlobState.DEAD
+                            elif action:
+                                action_blob.state = BlobState.SHOUT
+                                shouters += 1
+                                passive_blob.state = BlobState.RUN_AWAY
+                                p = [1 - config.PROB_GET_EATEN, config.PROB_GET_EATEN]
+                                eaten = bool(np.random.choice((0, 1), size=1, p=p))
+                                if eaten:
+                                    action_blob.state = BlobState.DEAD
+                                else:
+                                    action_blob.state = BlobState.RUN_AWAY
+                            else:
+                                action_blob.state = BlobState.RUN_AWAY
+                                passive_blob.state = BlobState.DEAD
 
-    # plt.figure(figsize=[10, 5])
+                        # if there is one blob near tree he always run away
+                        elif tree.predator and len(tree.blobs) == 1:
+                            tree.blobs[0].state = BlobState.RUN_AWAY
+                    # ACTIONS (DEAD, SHOUTING ETC)
+                    # draw_grid(screen, grid, w_width, w_height, step, trees, home)
+                    print('hehe')
+                    for tree in trees:
+                        for blob in tree.blobs:
+                            if blob.state in [BlobState.RUN_AWAY, BlobState.NEAR_TREE]:
+                                blob.state = BlobState.TO_REPRODUCE
+                                home.add_blob(blob)
+                        tree.blobs = []
+                    draw_grid(screen, grid, w_width, w_height, step, trees, home)
+
+                    new_blobs = []
+                    for blob in home.get_blobs():
+                        sons = blob.reproduce()
+                        for son in sons:
+                            new_blobs.append(son)
+                    home.blobs = new_blobs.copy()
+                    home.blobs = home.blobs[:350]
+                    draw_grid(screen, grid, w_width, w_height, step, trees, home)
+
+    pygame.quit()
+
     fig, ax = plt.subplots(figsize=[10, 5])
-
     ax.plot(list(map(lambda day: day.altruistic_population, statistics.days)), color='b', label='alt')
     ax.plot(list(map(lambda day: day.cowardice_population, statistics.days)), color='r', label='cow')
     ax.legend()
@@ -79,8 +120,6 @@ def simulation():
     fig.tight_layout()
     title.set_y(1.05)
     fig.subplots_adjust(top=0.65)
-
-
 
     plt.show()
     print('hehe')

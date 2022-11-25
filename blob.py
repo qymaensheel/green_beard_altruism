@@ -3,6 +3,8 @@ from enum import Enum
 from uuid import uuid4
 from config import Config
 
+config = Config.get_instance()
+
 
 class BlobGene(Enum):
     COWARDICE = 1
@@ -24,9 +26,11 @@ class Blob:
         self.gene = gene
         self.state = BlobState.SLEEPING
         self.tree = None
+        self.x = None
+        self.y = None
 
     def reproduce(self):
-        if random.random() < Config.PROB_DOUBLE_REPRODUCE:
+        if random.random() < config.PROB_DOUBLE_REPRODUCE:
             son = Blob(self.gene)
             return [son]
         else:
