@@ -9,7 +9,7 @@ class Home:
         self.blobs = blobs
         self.x = x
         self.y = y
-        self.image = pygame.image.load(r"./imgs/home.png")
+        self.image = pygame.image.load(r"./imgs/home2.png")
 
     def get_blobs(self):
         return self.blobs

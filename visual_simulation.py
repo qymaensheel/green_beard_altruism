@@ -40,8 +40,8 @@ def draw_grid(screen, grid, w_width, w_height, t, trees, home, shuffle=True):
         blob_positions = []
         if shuffle or t == 0:
 
-            for x in np.linspace(50, 450, config.BLOBS_GRID_SIZE):
-                for y in np.linspace(50, 750., config.BLOBS_GRID_SIZE):
+            for x in np.linspace(50, 430, config.BLOBS_GRID_SIZE):
+                for y in np.linspace(50, 730., config.BLOBS_GRID_SIZE):
                     blob_positions.append((x, y))
             random.shuffle(blob_positions)
         for blob_ctr, blob in enumerate(home.get_blobs()):
