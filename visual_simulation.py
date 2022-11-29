@@ -2,6 +2,8 @@ import random
 from time import sleep
 import numpy as np
 import pygame
+
+from blob import BlobState
 from config import Config
 
 config = Config.get_instance()

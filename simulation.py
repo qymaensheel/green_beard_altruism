@@ -1,19 +1,21 @@
 import random
+
 import numpy as np
 import pygame
 from matplotlib import pyplot as plt
-from config import Config 
-from blob import BlobState, Blob, BlobGene
-from home import Home
-from statistics import Statistics, Day
-from tree import Tree
-from visual_simulation import Grid, draw_grid
-
 from pygame.locals import (
     K_RIGHT,
     KEYDOWN,
     QUIT,
+    K_ESCAPE
 )
+
+from blob import BlobState, Blob, BlobGene
+from config import Config
+from home import Home
+from statistics import Statistics, Day
+from tree import Tree
+from visual_simulation import draw_grid
 
 config = Config.get_instance()
 
@@ -34,7 +36,7 @@ def simulation():
     pygame.Surface.convert_alpha(config.IMAGES['DEAD'])
     pygame.Surface.convert_alpha(config.IMAGES['RUN_AWAY'])
 
-    time_delay = 5000  # 0.1 s
+    time_delay = config.AUTORUN_TIME_DELAY
     timer_event = pygame.USEREVENT + 1
     pygame.time.set_timer(timer_event, time_delay)
 
@@ -44,10 +46,9 @@ def simulation():
     step = -1
     while running:
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE or step >= config.STEPS:
                 running = False
-            if event.type == KEYDOWN:
-                if event.key == K_RIGHT:
+            elif event.type == KEYDOWN and event.key == K_RIGHT or event.type == timer_event and config.AUTORUN:
                     step += 1
                     num_of_trees = config.TREES_GRID_SIZE ** 2
                     trees = generate_trees(num_of_trees)
@@ -82,7 +83,6 @@ def simulation():
                             else:
                                 action_blob.state = BlobState.RUN_AWAY
                                 passive_blob.state = BlobState.DEAD
-                            print(f'{tree.blobs[0].state}\t{tree.blobs[1].state}')
                         # if there is one blob near tree he always run away
                         elif tree.predator and len(tree.blobs) == 1:
                             tree.blobs[0].state = BlobState.RUN_AWAY
@@ -121,22 +121,29 @@ def simulation():
 
     pygame.quit()
 
+    save_txt_file()
     plot(statistics)
     print('hehe')
 
 
 def plot(statistics):
     fig, ax = plt.subplots(figsize=[10, 5])
-    ax.plot(list(map(lambda day: day.altruistic_population, statistics.days)), color='b', label='alt')
-    ax.plot(list(map(lambda day: day.cowardice_population, statistics.days)), color='r', label='cow')
+    ax.plot(list(map(lambda day: day.altruistic_population, statistics.days)), color='g', label='green beard')
+    ax.plot(list(map(lambda day: day.cowardice_population, statistics.days)), color='y', label='cowardice')
     ax.legend()
     ax.set_xlabel('Days')
     ax.set_ylabel('Population')
-    title = ax.set_title(str(config))
+    title = ax.set_title('Population change')
     fig.tight_layout()
     title.set_y(1.05)
-    fig.subplots_adjust(top=0.65)
+    # fig.subplots_adjust(top=0.65)
     plt.show()
+    fig.savefig((config.PLOT_PATH / config.SIMULATION_NAME))
+
+
+def save_txt_file() -> None:
+    with open((config.PLOT_PATH / f'{config.SIMULATION_NAME}.txt'), 'w') as f:
+        f.write(str(config))
 
 
 def assign_blobs_and_trees(trees, home):
