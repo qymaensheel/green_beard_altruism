@@ -28,7 +28,7 @@ class Grid:
         self.grid = np.zeros((size, size))
 
 
-def draw_grid(screen, grid, w_width, w_height, t, trees, home, shuffle=True):
+def draw_grid(screen, w_width, w_height, t, trees, home, shuffle=True):
     sleep(config.SLEEP)
     white = (255, 255, 255)
     screen.fill(white)
@@ -49,12 +49,14 @@ def draw_grid(screen, grid, w_width, w_height, t, trees, home, shuffle=True):
                 blob.x, blob.y = blob_positions[blob_ctr]
             screen.blit(config.IMAGES[str(blob.gene).split('.')[-1]], (blob.x, blob.y))
 
+
     tree_ctr = -1
     for x in np.linspace(550, 1500, config.TREES_GRID_SIZE):
         for y in np.linspace(50, 750., config.TREES_GRID_SIZE):
             tree_ctr += 1
             trees[tree_ctr].image = pygame.transform.scale(trees[tree_ctr].image, (25, 30))
             screen.blit(trees[tree_ctr].image, (x, y))
+
     else:
         tree_ctr = -1
         for x in np.linspace(550, 1500, config.TREES_GRID_SIZE):
@@ -63,10 +65,23 @@ def draw_grid(screen, grid, w_width, w_height, t, trees, home, shuffle=True):
                 trees[tree_ctr].image = pygame.transform.scale(trees[tree_ctr].image, (25, 30))
                 screen.blit(trees[tree_ctr].image, (x, y))
                 if len(trees[tree_ctr].blobs) == 1:
-                    screen.blit(config.IMAGES[str(trees[tree_ctr].blobs[0].gene).split('.')[-1]], (x - 10, y + 15))
+                    blob = trees[tree_ctr].blobs[0]
+                    blob.x = x - 10
+                    blob.y = y + 10
+                    blob.blit(screen)
                 elif len(trees[tree_ctr].blobs) == 2:
-                    screen.blit(config.IMAGES[str(trees[tree_ctr].blobs[0].gene).split('.')[-1]], (x - 10, y + 15))
-                    screen.blit(config.IMAGES[str(trees[tree_ctr].blobs[1].gene).split('.')[-1]], (x + 10, y + 15))
+                    # screen.blit(config.IMAGES[str(trees[tree_ctr].blobs[0].gene).split('.')[-1]], (x - 10, y + 15))
+                    # screen.blit(config.IMAGES[str(trees[tree_ctr].blobs[1].gene).split('.')[-1]], (x + 10, y + 15))
+                    blob1 = trees[tree_ctr].blobs[0]
+                    blob1.x = x - 10
+                    blob1.y = y + 15
+                    blob2 = trees[tree_ctr].blobs[1]
+                    blob2.x = x + 10
+                    blob2.y = y + 15
+
+                    blob1.blit(screen)
+                    blob2.blit(screen)
+
 
     font = pygame.font.Font('freesansbold.ttf', 32)
     text = font.render(f't = {t}', True, white, blue)
