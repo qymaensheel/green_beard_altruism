@@ -1,15 +1,11 @@
 from blob import Blob, BlobGene
-import pygame
 
 
 class Home:
-    def __init__(self, blobs=None, x=0, y=0):
+    def __init__(self, blobs=None):
         if blobs is None:
             blobs = []
         self.blobs = blobs
-        self.x = x
-        self.y = y
-        self.image = pygame.image.load(r"./imgs/home2.png")
 
     def get_blobs(self):
         return self.blobs

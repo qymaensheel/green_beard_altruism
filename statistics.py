@@ -5,7 +5,6 @@ class Day:
 
 
 class Statistics:
-
     def __init__(self):
         self.days = []
 
