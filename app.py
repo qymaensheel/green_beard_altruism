@@ -1,12 +1,16 @@
 import json
 from threading import Thread
 from simulation import simulation
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, render_template
 from uuid import uuid4
 
 from config import Config
 
 app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 
 @app.route('/simulation', methods=('POST',))
