@@ -41,9 +41,13 @@
     <script>
         function startSimulation() {
             console.log('starting')
-            fetch("/simulation", {method: "POST"})
+
+            let data = document.getElementById("inputJson").innerHTML
+            console.log(data)
+
+            fetch("/simulation", {method: "POST", body:data})
                 .then((response) => response.json())
-                .then((json) => console.log(json));
+                .then((json) => localStorage.setItem('simulationId', json.simulationId));
         }
 
         function getTxt() {
@@ -72,6 +76,20 @@
     <div class="row mt-5">
         <div class="col text-center">
             <!-- Two buttons -->
+            <textarea id="inputJson">
+                {
+    "NUMBER_OF_BLOBS": 500,
+    "NUMBER_OF_TREES": 1000,
+    "PROB_BAD_TREE": 0.5,
+    "PROB_GET_EATEN": 0.5,
+    "PROB_DOUBLE_REPRODUCE": 0.3,
+    "ALTRUISTIC_GENE_FRACTION": 0.2,
+    "STEPS": 100,
+    "GREEN_BEARD": true,
+    "SIMULATION_NAME": "hehe",
+    "PLOT_PATH": "plots"
+}
+            </textarea>
             <button type="button" class="btn btn-primary me-2" onclick="startSimulation()">Start simulation</button>
             <button type="button" class="btn btn-secondary">Fuck Barton</button>
             <button type="button" class="btn btn-secondary">Fuck Kris</button>
