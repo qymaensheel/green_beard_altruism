@@ -49,19 +49,13 @@
         }
 
         function getTxt() {
-            let body = JSON.stringify(
-                {type: "txt", simulationId: localStorage.getItem('simulationId')}
-            )
-            fetch("/simulation", {method: "GET", body: body})
+            fetch("/simulation?type=txt&simulationId="+localStorage.getItem('simulationId'), {method: "GET"})
                 .then((response) => response.text())
                 .then((text) => document.getElementById("config").innerHTML = text);
         }
 
         function getPng() {
-            let body = JSON.stringify(
-                {type: "png", simulationId: localStorage.getItem('simulationId')}
-            )
-            fetch("/simulation", {method: "GET", body: body})
+            fetch("/simulation?type=png&simulationId="+localStorage.getItem('simulationId'), {method: "GET"})
                 // .then((response) => response.text())
                 // .then((text) => document.getElementById("config").innerHTML = text);
         }
@@ -78,7 +72,7 @@
     <div class="row mt-5">
         <div class="col text-center">
             <!-- Two buttons -->
-            <textarea id="inputJson" rows="20" cols="50">{
+            <textarea id="inputJson" rows="15" cols="40">{
     "NUMBER_OF_BLOBS": 500,
     "NUMBER_OF_TREES": 1000,
     "PROB_BAD_TREE": 0.5,
@@ -92,8 +86,8 @@
 }
             </textarea><br>
             <button type="button" class="btn btn-primary me-2" onclick="startSimulation()">Start simulation</button>
-            <button type="button" class="btn btn-secondary" onclick="getTxt()">Fuck Barton</button>
-            <button type="button" class="btn btn-secondary" onclick="getPng()">Fuck Kris</button>
+            <button type="button" class="btn btn-secondary" onclick="getTxt()">Get TXT</button>
+            <button type="button" class="btn btn-secondary" onclick="getPng()">Get PNG</button>
         </div>
     </div>
     <div class="row mt-5">
@@ -101,10 +95,6 @@
             <!-- Image field -->
             <div class="card">
                 <img id="plot" src="https://via.placeholder.com/300" alt="Placeholder image" class="card-img-top">
-                <div class="card-body">
-                    <h5 class="card-title">Placeholder Image</h5>
-                    <p class="card-text">This is a placeholder image with a simple description.</p>
-                </div>
             </div>
         </div>
         <p id="config"></p>

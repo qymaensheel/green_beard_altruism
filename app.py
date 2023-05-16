@@ -26,11 +26,10 @@ def run_simulation():
 
 @app.route('/simulation', methods=('GET',))
 def simulation_get_results():
-    data = json.loads(request.data)
-    uuid = data['simulationId']
-    return_type = data['type']
+    uuid = request.args.get('simulationId')
+    return_type = request.args.get('type')
     filepath = f'{uuid}.{return_type}'
     return send_from_directory(directory='plots', path=filepath, as_attachment=True)
 
 
-app.run('146.59.12.7', 8080, debug=True)
+app.run('localhost', 8080, debug=True)
