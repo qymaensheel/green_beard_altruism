@@ -49,16 +49,26 @@
         }
 
         function getTxt() {
-            fetch("/simulation?type=txt&simulationId="+localStorage.getItem('simulationId'), {method: "GET"})
+            fetch("/simulation?type=txt&simulationId=" + localStorage.getItem('simulationId'), {method: "GET"})
                 .then((response) => response.text())
                 .then((text) => document.getElementById("config").innerHTML = text);
         }
 
         function getPng() {
-            fetch("/simulation?type=png&simulationId="+localStorage.getItem('simulationId'), {method: "GET"})
-                // .then((response) => response.text())
-                // .then((text) => document.getElementById("config").innerHTML = text);
+            fetch("/simulation?type=png&simulationId=" + localStorage.getItem('simulationId'), {method: "GET"})
+
+                .then(response => response.blob())
+                .then(blob => {
+                    // Call the function to display the image passing the blob
+                    displayImage(blob);
+                })
         }
+
+        function displayImage(blob) {
+            const imgElement = document.getElementById('plot');
+            imgElement.src = URL.createObjectURL(blob);
+        }
+
     </script>
 </head>
 <body>
