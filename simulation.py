@@ -9,17 +9,17 @@ from home import Home
 from statistics import Statistics, Day
 from tree import Tree
 
-config = Config.get_instance()
 
-
-def simulation():
+def simulation(config=Config.get_instance(), uuid=-1):
+    print(config)
+    print(uuid)
     statistics = Statistics()
     home = Home()
-    fill_home(home)
+    fill_home(home, config)
     step = -1
     while step <= config.STEPS:
         step += 1
-        trees = generate_trees()
+        trees = generate_trees(config)
         altruistic_population = home.get_blob_count_by_type(BlobGene.ALTRUISTIC)
         cowardice_population = home.get_blob_count_by_type(BlobGene.COWARDICE)
         statistics.days.append(Day(altruistic_population, cowardice_population))
@@ -76,11 +76,11 @@ def simulation():
                 new_blobs.append(son)
         home.blobs = new_blobs.copy()
 
-    save_txt_file()
-    plot(statistics)
+    save_txt_file(config, str(uuid))
+    plot(statistics, str(config.PLOT_PATH / str(uuid)))
 
 
-def plot(statistics):
+def plot(statistics, plot_path):
     fig, ax = plt.subplots(figsize=[10, 5])
     ax.plot(list(map(lambda day: day.altruistic_population, statistics.days)), color='g', label='green beard')
     ax.plot(list(map(lambda day: day.cowardice_population, statistics.days)), color='y', label='cowardice')
@@ -90,11 +90,11 @@ def plot(statistics):
     title = ax.set_title('Population change')
     fig.tight_layout()
     title.set_y(1.05)
-    fig.savefig((config.PLOT_PATH / config.SIMULATION_NAME))
+    fig.savefig(plot_path)
 
 
-def save_txt_file() -> None:
-    with open((config.PLOT_PATH / f'{config.SIMULATION_NAME}.txt'), 'w') as f:
+def save_txt_file(config, uuid) -> None:
+    with open((config.PLOT_PATH / f'{uuid}.txt'), 'w') as f:
         f.write(str(config))
 
 
@@ -111,7 +111,8 @@ def assign_blobs_and_trees(trees, home):
     home.blobs = []
 
 
-def generate_trees(number_of_trees=config.NUMBER_OF_TREES) -> list[Tree]:
+def generate_trees(config) -> list[Tree]:
+    number_of_trees = config.NUMBER_OF_TREES
     trees = []
     for tree_index in range(number_of_trees):
         p = [1 - config.PROB_BAD_TREE, config.PROB_BAD_TREE]
@@ -120,7 +121,7 @@ def generate_trees(number_of_trees=config.NUMBER_OF_TREES) -> list[Tree]:
     return trees
 
 
-def fill_home(home: Home) -> None:
+def fill_home(home: Home, config) -> None:
     number_of_altruistic_blobs = config.NUMBER_OF_BLOBS * config.ALTRUISTIC_GENE_FRACTION
     for blob_index in range(config.NUMBER_OF_BLOBS):
         if blob_index < number_of_altruistic_blobs:

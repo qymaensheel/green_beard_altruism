@@ -1,0 +1,12 @@
+{
+    "NUMBER_OF_BLOBS": 500,
+    "NUMBER_OF_TREES": 1000,
+    "PROB_BAD_TREE": 0.5,
+    "PROB_GET_EATEN": 0.5,
+    "PROB_DOUBLE_REPRODUCE": 0.3,
+    "ALTRUISTIC_GENE_FRACTION": 0.2,
+    "STEPS": 1000,
+    "GREEN_BEARD": true,
+    "SIMULATION_NAME": "hehe",
+    "PLOT_PATH": "plots"
+}
