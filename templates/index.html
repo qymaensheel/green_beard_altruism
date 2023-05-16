@@ -40,28 +40,30 @@
     </style>
     <script>
         function startSimulation() {
-            console.log('starting')
 
             let data = document.getElementById("inputJson").innerHTML
-            console.log(data)
 
-            fetch("/simulation", {method: "POST", body:data})
+            fetch("/simulation", {method: "POST", body: data})
                 .then((response) => response.json())
                 .then((json) => localStorage.setItem('simulationId', json.simulationId));
         }
 
         function getTxt() {
-            console.log('starting')
-            fetch("http://146.59.12.7:8080/simulation", {method: "POST"})
-                .then((response) => response.json())
-                .then((json) => console.log(json));
+            let body = JSON.stringify(
+                {type: "txt", simulationId: localStorage.getItem('simulationId')}
+            )
+            fetch("/simulation", {method: "GET", body: body})
+                .then((response) => response.text())
+                .then((text) => document.getElementById("config").innerHTML = text);
         }
 
         function getPng() {
-            console.log('starting')
-            fetch("http://146.59.12.7:8080/simulation", {method: "POST"})
-                .then((response) => response.json())
-                .then((json) => console.log(json));
+            let body = JSON.stringify(
+                {type: "png", simulationId: localStorage.getItem('simulationId')}
+            )
+            fetch("/simulation", {method: "GET", body: body})
+                // .then((response) => response.text())
+                // .then((text) => document.getElementById("config").innerHTML = text);
         }
     </script>
 </head>
@@ -76,8 +78,7 @@
     <div class="row mt-5">
         <div class="col text-center">
             <!-- Two buttons -->
-            <textarea id="inputJson">
-                {
+            <textarea id="inputJson" rows="20" cols="50">{
     "NUMBER_OF_BLOBS": 500,
     "NUMBER_OF_TREES": 1000,
     "PROB_BAD_TREE": 0.5,
@@ -89,23 +90,24 @@
     "SIMULATION_NAME": "hehe",
     "PLOT_PATH": "plots"
 }
-            </textarea>
+            </textarea><br>
             <button type="button" class="btn btn-primary me-2" onclick="startSimulation()">Start simulation</button>
-            <button type="button" class="btn btn-secondary">Fuck Barton</button>
-            <button type="button" class="btn btn-secondary">Fuck Kris</button>
+            <button type="button" class="btn btn-secondary" onclick="getTxt()">Fuck Barton</button>
+            <button type="button" class="btn btn-secondary" onclick="getPng()">Fuck Kris</button>
         </div>
     </div>
     <div class="row mt-5">
         <div class="col-md-6 offset-md-3">
             <!-- Image field -->
             <div class="card">
-                <img src="https://via.placeholder.com/300" alt="Placeholder image" class="card-img-top">
+                <img id="plot" src="https://via.placeholder.com/300" alt="Placeholder image" class="card-img-top">
                 <div class="card-body">
                     <h5 class="card-title">Placeholder Image</h5>
                     <p class="card-text">This is a placeholder image with a simple description.</p>
                 </div>
             </div>
         </div>
+        <p id="config"></p>
     </div>
 </div>
 
