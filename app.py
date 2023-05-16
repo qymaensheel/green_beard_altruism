@@ -32,4 +32,4 @@ def simulation_get_results():
     return send_from_directory(directory='plots', path=filepath, as_attachment=True)
 
 
-app.run('localhost', 8080, debug=True)
+app.run('146.59.12.7', 8080)
