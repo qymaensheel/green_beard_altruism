@@ -52,7 +52,7 @@
             fetch("/simulation?type=txt&simulationId=" + localStorage.getItem('simulationId'), {method: "GET"})
                 .then((response) => {
                     if (response.status === 200) {
-                        return response.text()
+                        return "<h2>Simulation parameters:</h2>" + response.text()
                     } else {
                         return "<h2>Simulation still in progress...</h2>"
                     }
@@ -64,7 +64,7 @@
             fetch("/simulation?type=png&simulationId=" + localStorage.getItem('simulationId'), {method: "GET"})
 
                 .then(response => {
-                    if (response.status === 200) {
+                    if (response.status === 304) {
                         response.blob()
                     }
                 })
