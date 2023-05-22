@@ -21,11 +21,6 @@
             text-align: center;
         }
 
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
         .btn-secondary {
             background-color: #007bff;
             border-color: #007bff;
@@ -43,11 +38,9 @@
     </style>
     <script>
 
-
         function startSimulation() {
 
             let data = document.getElementById("inputJson").value
-            console.log(data)
             fetch("/simulation", {method: "POST", body: data})
                 .then((response) => response.json())
                 .then((json) => localStorage.setItem('simulationId', json.simulationId));
@@ -93,7 +86,6 @@
 <div class="container">
     <div class="row mt-5">
         <div class="col text-center">
-            <!-- H1 text -->
             <h1 class="mb-4">Blob simulation</h1>
         </div>
     </div>
