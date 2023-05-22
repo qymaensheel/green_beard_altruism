@@ -1,10 +1,11 @@
 import json
 from threading import Thread
-from simulation import simulation
-from flask import Flask, request, send_from_directory, render_template
 from uuid import uuid4
 
+from flask import Flask, request, send_from_directory, render_template
+
 from config import Config
+from simulation import simulation
 
 app = Flask(__name__)
 
@@ -32,4 +33,4 @@ def simulation_get_results():
     return send_from_directory(directory='plots', path=filepath, as_attachment=True)
 
 
-app.run('146.59.12.7', 8080)
+app.run('localhost', 8080, debug=True)

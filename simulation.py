@@ -4,13 +4,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from blob import BlobState, Blob, BlobGene
-from config import Config
 from home import Home
 from statistics import Statistics, Day
 from tree import Tree
 
 
-def simulation(config=Config.get_instance(), uuid=-1):
+def simulation(config, uuid=-1):
     print(config)
     print(uuid)
     statistics = Statistics()
